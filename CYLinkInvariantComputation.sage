@@ -13,7 +13,7 @@ def TopoData(ii):
     I = singular.ideal(singular(poly))
     ra = I.jacob()
     ra = ra.groebner()
-    grobner_length = singular.size(ra)
+    grobner_length = len(list(ra))
     K = ra.kbase()
     s = singular.size(K)
     

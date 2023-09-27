@@ -9,24 +9,27 @@ from sklearn.metrics import mean_absolute_percentage_error as MAPE
 
 #%% #Import data
 weights, grobner_lengths = [], []
-with open('Data/GrobnerBasis_Data.txt','r') as file:
-    for idx, line in enumerate(file.readlines()):
-        if idx%4 == 0: weights.append(eval(line))
-        if idx%4 == 2: grobner_lengths.append(len(line.replace('[1,','[').split(','))) ####formatted like this due to data errors
+with open('Data/Topological_Data.txt','r') as file:
+    for idx, line in enumerate(file.readlines()[1:]):
+        if idx%6 == 0: weights.append(eval(line))
+        if idx%6 == 4: grobner_lengths.append(eval(line))
+weights = np.array(weights)
+grobner_lengths = np.array(grobner_lengths)
 del(file,idx,line)
 
 #%% #Grobner length correlations
 plt.figure('Histogram')
 plt.hist(grobner_lengths,bins=np.array(range(max(grobner_lengths)+2))-0.5)
-plt.xlabel(r'Grobner Basis Length') 
+plt.xlabel(r'Gr$\ddot{o}$bner Basis Length') 
 plt.ylabel('Frequency')
 plt.ylim(0)
+#plt.xlim(0,7500)
 plt.grid()
 plt.tight_layout()
 #plt.savefig('GrobnerLengths_histogram.pdf')
 
 #%% #Set-up data for ML
-k = 5          #...number of k-fold cross-validations to perform (k = 5 => 80(train) : 20(test) splits approx.)
+k = 5 #...number of k-fold cross-validations to perform (k = 5 => 80(train) : 20(test) splits approx.)
 ML_data = list(zip(weights,grobner_lengths))
 
 #Shuffle data ordering
@@ -59,8 +62,8 @@ seed = 1
 for i in range(k):
     print(f'NN {i+1} training...')
     #Define & Train NN Regressor directly on the data
-    #Edit NN params bellow!!!
-    nn_reg = MLPRegressor((256,256,256),activation='relu',solver='adam')#,random_state=seed)
+    #Edit NN params bellow...
+    nn_reg = MLPRegressor((16,32,16),activation='relu',solver='adam')#,random_state=seed)
     nn_reg.fit(Train_inputs[i], Train_outputs[i]) 
 
     #Compute NN predictions on test data, and calculate learning measures
@@ -79,21 +82,13 @@ print('MAE: ',sum(MAEs)/k,'\pm',np.std(MAEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
 
 ##############################################################################
-#%% #Match up datasets (run ML_Hodge.py cell to import Sweights & SHodge data used in this analysis)
-GScombined = []
-for w1_idx in range(len(weights)):
-    for w2_idx in range(len(Sweights)):
-        if np.array_equal(weights[w1_idx],Sweights[w2_idx]):
-            GScombined.append([grobner_lengths[w1_idx],SHodge[w2_idx][1]])
-            break
-    if len(GScombined) == len(Sweights): break ###remove when have full data
-del(w1_idx,w2_idx)
-print(f'PMCC: {np.corrcoef(GScombined.transpose())}')
+#%% #Print the correlation between Grobner basis length and sasakian h21 (run ML_Hodge.py cell to import Sweights & SHodge data used in this analysis)
+GScombined = np.vstack((grobner_lengths,SHodge[:,1]))
+print(f'PMCC: {np.corrcoef(GScombined)}')
 
 #%% #Cross-plot Grobner length against Sh21
-GScombined = np.array(GScombined)
 plt.figure()
-plt.scatter(GScombined[:,0],GScombined[:,1],alpha=0.1)
+plt.scatter(GScombined[0,:],GScombined[1,:],alpha=0.1)
 #plt.axline((0, 0), slope=1, c='k')
 plt.xlabel('Grobner Basis Length')
 plt.ylabel('Sasakian '+r'$h^{2,1}$')
@@ -103,11 +98,13 @@ plt.tight_layout()
 
 #%% #Correlate polynomial length with GB length
 weights, poly_lengths, grobner_lengths = [], [], []
-with open('Data/groebner_basis.txt','r') as file:
-    for idx, line in enumerate(file.readlines()):
-        if idx%4 == 0: weights.append(eval(line))
-        if idx%4 == 1: poly_lengths.append(len(line.strip().split('+')))
-        if idx%4 == 2: grobner_lengths.append(len(line.replace('[1,','[').split(','))) ####formatted like this due to data errors
+with open('Data/Topological_Data.txt','r') as file:
+    for idx, line in enumerate(file.readlines()[1:]):
+        if idx%6 == 0: weights.append(eval(line))
+        if idx%6 == 1: poly_lengths.append(len(line.strip().split('+')))
+        if idx%6 == 4: grobner_lengths.append(eval(line)) ####formatted like this due to data errors
 del(file,idx,line)
 
 print(f'PMCC: {np.corrcoef(list(zip(*list(zip(poly_lengths,grobner_lengths)))))}')
+
+
