@@ -11,8 +11,8 @@ from sklearn.metrics import matthews_corrcoef as MCC
 Weight, CNI = [], []
 with open('Data/Topological_Data.txt','r') as file:
     for idx, line in enumerate(file.readlines()[1:]):
-        if idx%5 == 0: Weight.append(eval(line))
-        if idx%5 == 3: CNI.append(eval(line))
+        if idx%6 == 0: Weight.append(eval(line))
+        if idx%6 == 3: CNI.append(eval(line))
 Weight = np.array(Weight)
 CNI = np.array(CNI)
 del(file,line,idx)
@@ -28,7 +28,7 @@ plt.ylabel('Frequency')
 plt.ylim(0)
 plt.grid()
 plt.tight_layout()
-#plt.savefig('CNI_histogram.pdf')
+plt.savefig('CNI_histogram.pdf')
 
 #Plot histogram of weights
 plt.figure('Weight Histogram')
@@ -86,8 +86,9 @@ Accs, MCCs = [], []
 
 #Loop through each cross-validation run
 for i in range(k):
+    print(f'NN {i+1} training...')
     #Define & Train NN Regressor
-    nn = MLPClassifier((256,256,256), activation='relu', solver='adam', max_iter=1000) #, random_state=seed)
+    nn = MLPClassifier((16,32,16), activation='relu', solver='adam')#, random_state=seed)
     nn.fit(Train_inputs[i], Train_outputs[i]) 
 
     #Compute NN predictions on test data, and calculate learning measures
@@ -119,7 +120,7 @@ def round_to_nearest_odd(number):
 #Loop through each cross-validation run
 for i in range(k):
     #Define & Train NN Regressor
-    nn = MLPRegressor((256,256,256), activation='relu', solver='adam', max_iter=1000, random_state=seed)
+    nn = MLPRegressor((16,32,16), activation='relu', solver='adam')#, max_iter=1000, random_state=seed)
     nn.fit(Train_inputs[i], Train_outputs[i]) 
 
     #Compute NN predictions on test data, and calculate learning measures

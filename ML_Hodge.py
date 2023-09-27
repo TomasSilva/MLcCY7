@@ -19,11 +19,11 @@ CY = [[weights[i],CYhodge[i]] for i in range(7555)]
 Sweights, SHodge = [], []
 with open('Data/Topological_Data.txt','r') as file:
     for idx, line in enumerate(file.readlines()[1:]):
-        if idx%5 == 0: Sweights.append(eval(line))
-        if idx%5 == 2: SHodge.append(eval(line))
+        if idx%6 == 0: Sweights.append(eval(line))
+        if idx%6 == 2: SHodge.append(eval(line))
 del(file,line,idx)
 
-#%% #Match up h21 datasets
+#%% #Match up datasets
 combined = []
 for w1_idx in range(7555):
     for w2_idx in range(len(Sweights)):
@@ -40,12 +40,11 @@ weights = np.array(weights)
 CYhodge = np.array(CYhodge)
 SHodge  = np.array(SHodge)
 
+#Output Hodge number histograms
 print(f'h^{3,0} data: {np.unique(SHodge[:,0],return_counts=True)}')
-
-h_idx = 1 #...select the hodge number to histogram  (note need to update the array depending on which dataset to work with)
 plt.figure('Histogram')
-plt.hist(SHodge[:,h_idx],bins=np.array(range(max(SHodge[:,h_idx])+2))-0.5)
-plt.xlabel(r'Sasakian $h^{2,1}$') ###
+plt.hist(SHodge[:,1],bins=np.array(range(max(SHodge[:,1])+2))-0.5)
+plt.xlabel(r'Sasakian $h^{2,1}$')
 plt.ylabel('Frequency')
 plt.ylim(0)
 plt.grid()
@@ -62,7 +61,7 @@ print(f'CYh21 = Sh21: {len(np.where(combined[:,0,1]==combined[:,1,1])[0])}')
 print(f'PMCC: {np.corrcoef(combined.reshape((len(combined),4)).transpose())}')
 
 plt.figure()
-plt.scatter(combined[:,0,1],combined[:,1,1],alpha=0.1)
+plt.scatter(combined[:,0,1],combined[:,1,1],alpha=0.2)
 #plt.axline((0, 0), slope=1, c='k') #add y=x line
 plt.xlabel('CY '+CYh_labels[CYh_idx])
 plt.ylabel('Sasakian '+Sh_labels[Sh_idx])
@@ -105,8 +104,8 @@ MSEs,MAEs, MAPEs, Rsqs = [], [], [], []
 for i in range(k):
     print(f'NN {i+1} training...')
     #Define & Train NN Regressor directly on the data
-    #Edit NN params bellow!!!
-    nn_reg = MLPRegressor((256,256,256),activation='relu',solver='adam')#,random_state=seed)
+    #Edit NN params bellow...
+    nn_reg = MLPRegressor((16,32,16),activation='relu',solver='adam')#,random_state=seed)
     nn_reg.fit(Train_inputs[i], Train_outputs[i]) 
 
     #Compute NN predictions on test data, and calculate learning measures
