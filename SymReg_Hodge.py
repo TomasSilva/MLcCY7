@@ -18,7 +18,6 @@ outputs = SHodge[:,1]
 
 model = PySRRegressor(
     binary_operators=["+", "-", "*", "/"], 
-    unary_operators=["square", "cube", "sqrt"], 
     niterations = 30,
     populations = 3*os.cpu_count(),
     ncyclesperiteration = 5000,
