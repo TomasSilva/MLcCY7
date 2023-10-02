@@ -27,7 +27,7 @@ model = PySRRegressor(
     weight_optimize = 0.001,
     maxsize = 25,
     progress=True,
-    loss="L2DistLoss()",
+    loss="L1DistLoss()",
     batching=True,
     turbo = True,
 )
