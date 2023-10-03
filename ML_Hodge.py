@@ -1,7 +1,8 @@
-'''Script to correlate CY hodge with sasakian hodge'''
+'''Script to correlate CY hodge with Sasakian hodge and ML'''
 #Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
+from copy import deepcopy as dc
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error as MSE
 from sklearn.metrics import mean_absolute_error as MAE
@@ -97,7 +98,7 @@ del(ML_data) #...zipped list no longer needed
 
 #%% #Run NN train & test --> Regressor
 #Define measure lists
-MSEs,MAEs, MAPEs, Rsqs = [], [], [], []
+MSEs, MAEs, MAPEs, Rsqs, NNs = [], [], [], [], []
 #seed = 1                          
 
 #Loop through each cross-validation run
@@ -107,7 +108,8 @@ for i in range(k):
     #Edit NN params bellow...
     nn_reg = MLPRegressor((16,32,16),activation='relu',solver='adam')#,random_state=seed)
     nn_reg.fit(Train_inputs[i], Train_outputs[i]) 
-
+    NNs.append(dc(nn_reg))
+    
     #Compute NN predictions on test data, and calculate learning measures
     Test_pred = nn_reg.predict(Test_inputs[i])
     Rsqs.append(nn_reg.score(Test_inputs[i],Test_outputs[i]))
@@ -122,3 +124,23 @@ print('R^2: ',sum(Rsqs)/k,'\pm',np.std(Rsqs)/np.sqrt(k))
 print('MAE: ',sum(MAEs)/k,'\pm',np.std(MAEs)/np.sqrt(k))
 print('MSE: ',sum(MSEs)/k,'\pm',np.std(MSEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
+
+#%% #Predict on the remaining six weight systems
+remaining_weights = np.array([[1, 1, 8, 19, 28], [1, 1, 9, 21, 32], [1, 1, 11, 26, 39], [1, 1, 12, 28, 42], [1, 6, 34, 81, 122], [1, 6, 40, 93, 140]])
+Sh21_predictions = []
+for net in NNs:
+    Sh21_predictions.append([])
+    for ww in remaining_weights:
+        Sh21_predictions[-1].append(int(np.round(net.predict([ww])[0])))
+        #print(f'Weight system: {ww}\nSasakian h21: {int(np.round(nn_reg.predict([ww])[0]))}')
+Sh21_predictions = np.array(Sh21_predictions)
+print(f'Weight systems:\n{remaining_weights}\n')
+print(f'Sasakian h21: {np.round(np.mean(Sh21_predictions,axis=0))}')
+
+#%% #Print the equivalent Calabi-Yau Hodge numbers
+for idx in range(6):
+    for ii, row in enumerate(weights):
+        if np.array_equal(row,remaining_weights[idx]):
+            findex = ii
+            break
+    print(CYhodge[ii][1])

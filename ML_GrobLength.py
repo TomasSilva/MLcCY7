@@ -2,6 +2,7 @@
 #Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
+from copy import deepcopy as dc
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error as MSE
 from sklearn.metrics import mean_absolute_error as MAE
@@ -55,7 +56,7 @@ del(ML_data) #...zipped list no longer needed
 
 #%% #Run NN train & test --> Regressor
 #Define measure lists
-MSEs, MAEs, MAPEs, Rsqs = [], [], [], []
+MSEs, MAEs, MAPEs, Rsqs, NNs = [], [], [], [], []
 seed = 1                        
 
 #Loop through each cross-validation run
@@ -65,7 +66,8 @@ for i in range(k):
     #Edit NN params bellow...
     nn_reg = MLPRegressor((16,32,16),activation='relu',solver='adam')#,random_state=seed)
     nn_reg.fit(Train_inputs[i], Train_outputs[i]) 
-
+    NNs.append(dc(nn_reg))
+    
     #Compute NN predictions on test data, and calculate learning measures
     Test_pred = nn_reg.predict(Test_inputs[i])
     Rsqs.append(nn_reg.score(Test_inputs[i],Test_outputs[i]))
@@ -80,6 +82,19 @@ print('R^2: ',sum(Rsqs)/k,'\pm',np.std(Rsqs)/np.sqrt(k))
 print('MSE: ',sum(MSEs)/k,'\pm',np.std(MSEs)/np.sqrt(k))
 print('MAE: ',sum(MAEs)/k,'\pm',np.std(MAEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
+
+#%% #Predict on the remaining six weight systems
+remaining_weights = np.array([[1, 1, 8, 19, 28], [1, 1, 9, 21, 32], [1, 1, 11, 26, 39], [1, 1, 12, 28, 42], [1, 6, 34, 81, 122], [1, 6, 40, 93, 140]])
+GBL_predictions = []
+for net in NNs:
+    GBL_predictions.append([])
+    for ww in remaining_weights:
+        GBL_predictions[-1].append(int(np.round(net.predict([ww])[0])))
+        #print(f'Weight system: {ww}\nGroebner basis length: {int(np.round(nn_reg.predict([ww])[0]))}')
+GBL_predictions = np.array(GBL_predictions)
+
+print(f'Weight systems:\n{remaining_weights}\n')
+print(f'GBLs: {np.round(np.mean(GBL_predictions,axis=0))}')
 
 ##############################################################################
 #%% #Print the correlation between Grobner basis length and sasakian h21 (run ML_Hodge.py cell to import Sweights & SHodge data used in this analysis)
