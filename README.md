@@ -7,3 +7,16 @@ The `CY3PolynomialGeneration.sage` script details how the CY3s where generated, 
 
 The remaining scripts perform the respective ML investigations as detailed in the paper.       
 
+# BibTeX Citation
+``` 
+@article{Aggarwal:2023swe,
+    author = "Aggarwal, Daattavya and He, Yang-Hui and Heyes, Elli and Hirst, Edward and Earp, Henrique N. S\'a and Silva, Tom\'as S. R.",
+    title = "{Machine-learning Sasakian and $G_2$ topology on contact Calabi-Yau $7$-manifolds}",
+    eprint = "2310.03064",
+    archivePrefix = "arXiv",
+    primaryClass = "math.DG",
+    reportNumber = "QMUL-PH-23-14",
+    month = "10",
+    year = "2023"
+}
+```
