@@ -36,7 +36,7 @@ ML_data = list(zip(weights,grobner_lengths))
 #Shuffle data ordering
 np.random.shuffle(ML_data)
 s = int(np.floor(len(ML_data)/k)) #...number of datapoints in each validation split
-if k == 1: s = int(np.floor(0.8*len(ML_data)))
+if k == 1: s = int(np.floor(0.2*len(ML_data)))
     
 #Define data lists, each with k sublists with the relevant data for that cross-validation run
 Train_inputs, Train_outputs, Test_inputs, Test_outputs = [], [], [], []
@@ -47,10 +47,10 @@ if k > 1:
         Test_inputs.append([datapoint[0] for datapoint in ML_data[i*s:(i+1)*s]])
         Test_outputs.append([datapoint[1] for datapoint in ML_data[i*s:(i+1)*s]])
 else:
-     Train_inputs  = [[datapoint[0] for datapoint in ML_data[:s]]]
-     Train_outputs = [[datapoint[1] for datapoint in ML_data[:s]]]
-     Test_inputs   = [[datapoint[0] for datapoint in ML_data[s:]]]
-     Test_outputs  = [[datapoint[1] for datapoint in ML_data[s:]]]
+     Train_inputs  = [[datapoint[0] for datapoint in ML_data[s:]]]
+     Train_outputs = [[datapoint[1] for datapoint in ML_data[s:]]]
+     Test_inputs   = [[datapoint[0] for datapoint in ML_data[:s]]]
+     Test_outputs  = [[datapoint[1] for datapoint in ML_data[:s]]]
      
 del(ML_data) #...zipped list no longer needed
 
