@@ -47,10 +47,10 @@ if k > 1:
         Test_inputs.append([datapoint[0] for datapoint in ML_data[i*s:(i+1)*s]])
         Test_outputs.append([datapoint[1] for datapoint in ML_data[i*s:(i+1)*s]])
 else:
-     Train_inputs  = [[datapoint[0] for datapoint in ML_data[s:]]]
-     Train_outputs = [[datapoint[1] for datapoint in ML_data[s:]]]
-     Test_inputs   = [[datapoint[0] for datapoint in ML_data[:s]]]
-     Test_outputs  = [[datapoint[1] for datapoint in ML_data[:s]]]
+     Train_inputs  = [[datapoint[0] for datapoint in ML_data[:s]]]
+     Train_outputs = [[datapoint[1] for datapoint in ML_data[:s]]]
+     Test_inputs   = [[datapoint[0] for datapoint in ML_data[s:]]]
+     Test_outputs  = [[datapoint[1] for datapoint in ML_data[s:]]]
      
 del(ML_data) #...zipped list no longer needed
 
@@ -89,7 +89,7 @@ GBL_predictions = []
 for net in NNs:
     GBL_predictions.append([])
     for ww in remaining_weights:
-        GBL_predictions[-1].append(int(np.round(net.predict([ww])[0])))
+        GBL_predictions[-1].append(int(np.round(nn_reg.predict([ww])[0])))
         #print(f'Weight system: {ww}\nGroebner basis length: {int(np.round(nn_reg.predict([ww])[0]))}')
 GBL_predictions = np.array(GBL_predictions)
 
