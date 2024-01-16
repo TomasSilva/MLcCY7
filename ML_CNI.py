@@ -61,7 +61,7 @@ else:
 #Shuffle data ordering
 np.random.shuffle(ML_data)
 s = int(np.floor(len(ML_data)/k)) #...number of datapoints in each validation split
-if k == 1: s = int(np.floor(0.8*len(ML_data)))
+if k == 1: s = int(np.floor(0.2*len(ML_data)))
     
 #Define data lists, each with k sublists with the relevant data for that cross-validation run
 Train_inputs, Train_outputs, Test_inputs, Test_outputs = [], [], [], []
