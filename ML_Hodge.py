@@ -78,7 +78,7 @@ ML_data = list(zip(Sweights,SHodge[:,1]))
 #Shuffle data ordering
 np.random.shuffle(ML_data)
 s = int(np.floor(len(ML_data)/k)) #...number of datapoints in each validation split
-if k == 1: s = int(np.floor(0.8*len(ML_data)))
+if k == 1: s = int(np.floor(0.2*len(ML_data)))
     
 #Define data lists, each with k sublists with the relevant data for that cross-validation run
 Train_inputs, Train_outputs, Test_inputs, Test_outputs = [], [], [], []
@@ -131,7 +131,7 @@ Sh21_predictions = []
 for net in NNs:
     Sh21_predictions.append([])
     for ww in remaining_weights:
-        Sh21_predictions[-1].append(int(np.round(net.predict([ww])[0])))
+        Sh21_predictions[-1].append(int(np.round(nn_reg.predict([ww])[0])))
         #print(f'Weight system: {ww}\nSasakian h21: {int(np.round(nn_reg.predict([ww])[0]))}')
 Sh21_predictions = np.array(Sh21_predictions)
 print(f'Weight systems:\n{remaining_weights}\n')
