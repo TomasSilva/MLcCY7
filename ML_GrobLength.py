@@ -56,8 +56,9 @@ del(ML_data) #...zipped list no longer needed
 
 #%% #Run NN train & test --> Regressor
 #Define measure lists
-MSEs, MAEs, MAPEs, Rsqs, NNs = [], [], [], [], []
-seed = 1                        
+MSEs, MAEs, MAPEs, Rsqs, Accs, NNs = [], [], [], [], [], []
+bound = 0.05*(np.max(grobner_lengths)-np.min(grobner_lengths))
+#seed = 1                        
 
 #Loop through each cross-validation run
 for i in range(k):
@@ -74,6 +75,7 @@ for i in range(k):
     MSEs.append(MSE(Test_outputs[i],Test_pred,squared=True))   
     MAEs.append(MAE(Test_outputs[i],Test_pred))          
     MAPEs.append(MAPE(Test_outputs[i],Test_pred)) 
+    Accs.append(np.mean(np.where(np.absolute(np.array(Test_outputs[i])-Test_pred) < bound,1,0)))
 
 #Output averaged learning measures with standard errors
 print('####################################')
@@ -82,6 +84,7 @@ print('R^2: ',sum(Rsqs)/k,'\pm',np.std(Rsqs)/np.sqrt(k))
 print('MSE: ',sum(MSEs)/k,'\pm',np.std(MSEs)/np.sqrt(k))
 print('MAE: ',sum(MAEs)/k,'\pm',np.std(MAEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
+print('Accuracy:',sum(Accs)/k,'\pm',np.std(Accs)/np.sqrt(k))
 
 #%% #Predict on the remaining six weight systems
 remaining_weights = np.array([[1, 1, 8, 19, 28], [1, 1, 9, 21, 32], [1, 1, 11, 26, 39], [1, 1, 12, 28, 42], [1, 6, 34, 81, 122], [1, 6, 40, 93, 140]])
@@ -95,6 +98,39 @@ GBL_predictions = np.array(GBL_predictions)
 
 print(f'Weight systems:\n{remaining_weights}\n')
 print(f'GBLs: {np.round(np.mean(GBL_predictions,axis=0))}')
+
+##############################################################################
+#%% #Train on short GB and test on long GB
+#Set-up data
+sorted_data = sorted(list(zip(weights,grobner_lengths)),key=lambda x: x[1])
+
+s = int(np.floor(0.95*len(sorted_data)))
+train = sorted_data[:s]
+test = sorted_data[s:]
+
+np.random.shuffle(train)
+np.random.shuffle(test)
+
+Train_inputs, Train_outputs = zip(*train)
+Test_inputs,  Test_outputs  = zip(*test)
+
+Train_inputs = np.array(Train_inputs)
+Train_outputs = np.array(Train_outputs)
+Test_inputs = np.array(Test_inputs)
+Test_outputs = np.array(Test_outputs)
+
+#Train NN
+nn_reg = MLPRegressor((16,32,16),activation='relu',solver='adam')#,random_state=seed)
+nn_reg.fit(Train_inputs, Train_outputs) 
+
+#Test NN
+Test_pred = nn_reg.predict(Test_inputs)
+print(f'R^2: {nn_reg.score(Test_inputs,Test_outputs)}')
+print(f'MSE: {MSE(Test_outputs,Test_pred,squared=True)}')   
+print(f'MAE: {MAE(Test_outputs,Test_pred)}')          
+print(f'MAPE: {MAPE(Test_outputs,Test_pred)}') 
+bound = 0.05*(np.max(grobner_lengths)-np.min(grobner_lengths))
+print(f'Accuracy: {np.mean(np.where(np.absolute(np.array(Test_outputs)-Test_pred) < bound,1,0))}')
 
 ##############################################################################
 #%% #Print the correlation between Grobner basis length and sasakian h21 (run ML_Hodge.py cell to import Sweights & SHodge data used in this analysis)
@@ -121,5 +157,3 @@ with open('Data/Topological_Data.txt','r') as file:
 del(file,idx,line)
 
 print(f'PMCC: {np.corrcoef(list(zip(*list(zip(poly_lengths,grobner_lengths)))))}')
-
-
