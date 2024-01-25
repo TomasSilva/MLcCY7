@@ -128,6 +128,27 @@ print('MSE: ',sum(MSEs)/k,'\pm',np.std(MSEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
 print('Accuracy:',sum(Accs)/k,'\pm',np.std(Accs)/np.sqrt(k))
 
+#%% #Plot (pred v true)
+true = SHodge[:,1]
+pred = nn_reg.predict(Sweights)
+
+plt.figure(figsize = (8, 8))
+plt.scatter(Test_outputs,Test_pred,alpha=1,s=5) #s sets the dot size
+plt.axline((0, 0), slope=1, c='k', linewidth = 0.8, linestyle = '--') #add y=x line
+plt.xlabel(r'Sasakian $h^{2,1}$')
+plt.ylabel(r'NN Predicted $h^{2,1}$')
+plt.xlim(0,440)
+plt.ylim(0,440)
+plt.grid()
+#plt.tight_layout()
+plt.savefig('h21s_nntruepred.pdf')
+
+#%% #Test trained Sh21 NN on CYh21 data
+CY_pred = nn_reg.predict(weights)
+print(f'Rsq: {nn_reg.score(weights,CYhodge[:,1])}')
+print(f'MAE: {MAE(CYhodge[:,1],CY_pred)}')
+print(f'Acc: {np.mean(np.where(np.absolute(CYhodge[:,1]-CY_pred) < 0.05*(np.max(CYhodge[:,1])-np.min(CYhodge[:,1])),1,0))}')
+
 #%% #Predict on the remaining six weight systems
 remaining_weights = np.array([[1, 1, 8, 19, 28], [1, 1, 9, 21, 32], [1, 1, 11, 26, 39], [1, 1, 12, 28, 42], [1, 6, 34, 81, 122], [1, 6, 40, 93, 140]])
 Sh21_predictions = []
