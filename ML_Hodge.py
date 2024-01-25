@@ -98,7 +98,8 @@ del(ML_data) #...zipped list no longer needed
 
 #%% #Run NN train & test --> Regressor
 #Define measure lists
-MSEs, MAEs, MAPEs, Rsqs, NNs = [], [], [], [], []
+MSEs, MAEs, MAPEs, Rsqs, Accs, NNs = [], [], [], [], [], []
+bound = 0.05*(np.max(SHodge)-np.min(SHodge))
 #seed = 1                          
 
 #Loop through each cross-validation run
@@ -116,6 +117,7 @@ for i in range(k):
     MAEs.append(MAE(Test_outputs[i],Test_pred))
     MSEs.append(MSE(Test_outputs[i],Test_pred,squared=True))             
     MAPEs.append(MAPE(Test_outputs[i],Test_pred)) 
+    Accs.append(np.mean(np.where(np.absolute(np.array(Test_outputs[i])-Test_pred) < bound,1,0)))
 
 #Output averaged learning measures with standard errors
 print('####################################')
@@ -124,6 +126,7 @@ print('R^2: ',sum(Rsqs)/k,'\pm',np.std(Rsqs)/np.sqrt(k))
 print('MAE: ',sum(MAEs)/k,'\pm',np.std(MAEs)/np.sqrt(k))
 print('MSE: ',sum(MSEs)/k,'\pm',np.std(MSEs)/np.sqrt(k))
 print('MAPE:',sum(MAPEs)/k,'\pm',np.std(MAPEs)/np.sqrt(k))
+print('Accuracy:',sum(Accs)/k,'\pm',np.std(Accs)/np.sqrt(k))
 
 #%% #Predict on the remaining six weight systems
 remaining_weights = np.array([[1, 1, 8, 19, 28], [1, 1, 9, 21, 32], [1, 1, 11, 26, 39], [1, 1, 12, 28, 42], [1, 6, 34, 81, 122], [1, 6, 40, 93, 140]])
