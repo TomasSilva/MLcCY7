@@ -11,12 +11,15 @@ The remaining scripts perform the respective ML investigations as detailed in th
 ``` 
 @article{Aggarwal:2023swe,
     author = "Aggarwal, Daattavya and He, Yang-Hui and Heyes, Elli and Hirst, Edward and Earp, Henrique N. S\'a and Silva, Tom\'as S. R.",
-    title = "{Machine-learning Sasakian and $G_2$ topology on contact Calabi-Yau $7$-manifolds}",
+    title = "{Machine learning Sasakian and G2 topology on contact Calabi-Yau 7-manifolds}",
     eprint = "2310.03064",
     archivePrefix = "arXiv",
     primaryClass = "math.DG",
     reportNumber = "QMUL-PH-23-14",
-    month = "10",
-    year = "2023"
+    doi = "10.1016/j.physletb.2024.138517",
+    journal = "Phys. Lett. B",
+    volume = "850",
+    pages = "138517",
+    year = "2024"
 }
 ```
